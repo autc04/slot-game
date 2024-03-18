@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 
+
 export default class Scoreboard {
     public container: PIXI.Container;
     public outOfMoney = false;
@@ -8,10 +9,36 @@ export default class Scoreboard {
     private winAmount: number = 0;
     private money: number = 100;
     private bet: number = 5;
+    private fetchCounter: number = 0;
+    private game : any = null;
 
-    constructor(app: PIXI.Application) {
+    fetchmoney() {
+        let saveCounter = ++this.fetchCounter;
+        fetch('/money', {
+            method: 'GET',
+        }).then(res => res.json()).then(res =>{
+            if (saveCounter != this.fetchCounter) return;
+            console.log(res);
+            this.money = parseInt(res.toString());
+            this.moneyText.text = `money: $${this.money}`;
+            if (this.money - this.bet < 0) {
+                this.outOfMoney = true;
+            } else {
+                this.outOfMoney = false;
+            }
+            this.game.updateButton();
+        });
+    }
+
+    constructor(app: PIXI.Application, game: any) {
         this.container = new PIXI.Container();
         this.generate(app.screen.width, app.screen.height);
+        this.game = game;
+        this.fetchmoney();
+        window.setInterval(() => {
+            this.fetchmoney();
+        }, 1000);
+        
     }
 
     decrement() {
@@ -22,6 +49,7 @@ export default class Scoreboard {
         if (this.money - this.bet < 0) {
             this.outOfMoney = true;
         }
+        ++this.fetchCounter;
         // post money to server
         fetch('/money', {
             method: 'POST',
@@ -36,6 +64,7 @@ export default class Scoreboard {
         this.winAmountText.text = `win: $${this.winAmount}`;
         if (this.outOfMoney) this.outOfMoney = false;
         // post money to server
+        ++this.fetchCounter;
         fetch('/money', {
             method: 'POST',
             body: this.money.toString(),

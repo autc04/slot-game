@@ -12,6 +12,7 @@ export default class Game {
     private reelsContainer: ReelsContainer;
     private scoreboard: Scoreboard;
     private victoryScreen: VictoryScreen;
+    private playing: boolean = false;
 
     constructor() {
         this.app = new PIXI.Application({ width: 960, height: 536 });
@@ -43,7 +44,7 @@ export default class Game {
     }
 
     private createScoreboard() {
-        this.scoreboard = new Scoreboard(this.app);
+        this.scoreboard = new Scoreboard(this.app, this);
         this.app.stage.addChild(this.scoreboard.container);
     }
 
@@ -52,7 +53,22 @@ export default class Game {
         this.app.stage.addChild(this.victoryScreen.container);
     }
 
+    updateButton() {
+        if (this.playing) {
+            this.playBtn.setDisabled();
+        } else if (this.scoreboard.outOfMoney) {
+            this.playBtn.setDisabled();
+        } else {
+            this.playBtn.setEnabled();
+        }
+    }
+
     handleStart() {
+        if (this.scoreboard.outOfMoney) {
+            this.playBtn.setDisabled();
+            return;
+        }
+        this.playing = true;
         this.scoreboard.decrement();
         this.playBtn.setDisabled();
         this.reelsContainer.spin()
@@ -66,7 +82,8 @@ export default class Game {
             this.victoryScreen.show();
             new Audio('assets/win.m4a').play();
         }
-
-        if (!this.scoreboard.outOfMoney) this.playBtn.setEnabled();
+        this.playing = false;
+        this.updateButton();
+        
     }
 }
