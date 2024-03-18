@@ -6,6 +6,18 @@ const STATIC_PATH = resolve("./dist");
 const PORT = process.env.PORT || 8080;
 
 createServer(async (req, res) => {
+    if (req.url == "/money") {
+        if (req.method === "POST") {
+            req.on("data", async (data) => {
+                await fs.writeFile("money", data);
+                res.end("200");
+            });
+        } else {
+            const data = await fs.readFile("money");
+            res.end(data);    
+        }
+        return;
+    }
     const url = req.url === "/" ? "/index.html" : req.url;
     const filePath = join(STATIC_PATH, `${url}`);
     try {

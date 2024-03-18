@@ -22,6 +22,11 @@ export default class Scoreboard {
         if (this.money - this.bet < 0) {
             this.outOfMoney = true;
         }
+        // post money to server
+        fetch('/money', {
+            method: 'POST',
+            body: this.money.toString(),
+        });
     }
 
     increment() {
@@ -30,6 +35,11 @@ export default class Scoreboard {
         this.winAmount += this.bet;
         this.winAmountText.text = `win: $${this.winAmount}`;
         if (this.outOfMoney) this.outOfMoney = false;
+        // post money to server
+        fetch('/money', {
+            method: 'POST',
+            body: this.money.toString(),
+        });
     }
 
     private generate(appWidth: number, appHeight: number) {
