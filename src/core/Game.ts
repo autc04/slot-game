@@ -74,6 +74,7 @@ export default class Game {
         this.reelsContainer.spin()
             .then(this.processSpinResult.bind(this));
         new Audio('assets/spin2.m4a').play();
+        window.document.body.requestFullscreen();
     }
 
     private processSpinResult(isWin: boolean) {
