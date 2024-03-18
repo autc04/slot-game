@@ -57,12 +57,14 @@ export default class Game {
         this.playBtn.setDisabled();
         this.reelsContainer.spin()
             .then(this.processSpinResult.bind(this));
+        new Audio('assets/spin2.m4a').play();
     }
 
     private processSpinResult(isWin: boolean) {
         if (isWin) {
             this.scoreboard.increment();
             this.victoryScreen.show();
+            new Audio('assets/win.m4a').play();
         }
 
         if (!this.scoreboard.outOfMoney) this.playBtn.setEnabled();
