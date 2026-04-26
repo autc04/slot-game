@@ -14,7 +14,7 @@ export default class Scoreboard {
 
     fetchmoney() {
         let saveCounter = ++this.fetchCounter;
-        fetch('/money', {
+        fetch(window.GAME_CONFIG.moneyPath, {
             method: 'GET',
         }).then(res => res.json()).then(res =>{
             if (saveCounter != this.fetchCounter) return;
@@ -51,7 +51,7 @@ export default class Scoreboard {
         }
         ++this.fetchCounter;
         // post money to server
-        fetch('/money', {
+        fetch(window.GAME_CONFIG.moneyPath, {
             method: 'POST',
             body: this.money.toString(),
         });
@@ -65,7 +65,7 @@ export default class Scoreboard {
         if (this.outOfMoney) this.outOfMoney = false;
         // post money to server
         ++this.fetchCounter;
-        fetch('/money', {
+        fetch(window.GAME_CONFIG.moneyPath, {
             method: 'POST',
             body: this.money.toString(),
         });

@@ -16,7 +16,7 @@ export default class Loader {
     }
 
     private loadAssets() {
-        this.loader.add('atlas', './assets/atlas.json');
+        this.loader.add('atlas', window.GAME_CONFIG.assetBase + 'atlas.json');
     }
 
     private generateLoadingScreen(appWidth: number, appHeight: number) {
