@@ -6,18 +6,23 @@ const DIST_PATH = resolve("./dist");
 const STATE_FILE = resolve("./state.json");
 const PORT = process.env.PORT || 8080;
 
-interface InstanceState { money: number; }
+interface InstanceState { money: number; winPayout: number; }
 type AppState = Record<string, InstanceState>;
 
 const DEFAULT_STATE: AppState = {
-    "1": { money: 1000 },
-    "2": { money: 1000 },
+    "1": { money: 1000, winPayout: 10 },
+    "2": { money: 1000, winPayout: 10 },
 };
 
 async function readState(): Promise<AppState> {
     try {
         const raw = await fs.readFile(STATE_FILE, "utf8");
-        return JSON.parse(raw);
+        const stored: AppState = JSON.parse(raw);
+        const result: AppState = {};
+        for (const key of Object.keys(DEFAULT_STATE)) {
+            result[key] = { ...DEFAULT_STATE[key], ...stored[key] };
+        }
+        return result;
     } catch {
         return { ...DEFAULT_STATE };
     }
@@ -58,6 +63,29 @@ app.post("/:instance/money", async (req, res) => {
     }
     const state = await readState();
     state[instance].money = amount;
+    await writeState(state);
+    broadcast(state);
+    res.end("ok");
+});
+
+// Win payout API
+app.get("/:instance/win-amount", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    const state = await readState();
+    res.json(state[instance].winPayout ?? 10);
+});
+
+app.post("/:instance/win-amount", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    const amount = parseInt(req.body, 10);
+    if (isNaN(amount) || amount < 0) {
+        res.status(400).end("Invalid amount");
+        return;
+    }
+    const state = await readState();
+    state[instance].winPayout = amount;
     await writeState(state);
     broadcast(state);
     res.end("ok");

@@ -9,17 +9,20 @@ export default class Scoreboard {
     private winAmount: number = 0;
     private money: number = 100;
     private bet: number = 5;
+    private winPayout: number = 10;
     private fetchCounter: number = 0;
     private game : any = null;
 
     fetchmoney() {
         let saveCounter = ++this.fetchCounter;
-        fetch(window.GAME_CONFIG.moneyPath, {
-            method: 'GET',
-        }).then(res => res.json()).then(res =>{
+        Promise.all([
+            fetch(window.GAME_CONFIG.moneyPath, { method: 'GET' }).then(res => res.json()),
+            fetch(window.GAME_CONFIG.winAmountPath, { method: 'GET' }).then(res => res.json()),
+        ]).then(([moneyRes, winPayoutRes]) => {
             if (saveCounter != this.fetchCounter) return;
-            console.log(res);
-            this.money = parseInt(res.toString());
+            console.log(moneyRes, winPayoutRes);
+            this.money = parseInt(moneyRes.toString());
+            this.winPayout = parseInt(winPayoutRes.toString());
             this.moneyText.text = `money: $${this.money}`;
             if (this.money - this.bet < 0) {
                 this.outOfMoney = true;
@@ -58,9 +61,9 @@ export default class Scoreboard {
     }
 
     increment() {
-        this.money += this.bet * 2;
+        this.money += this.winPayout;
         this.moneyText.text = `money: $${this.money}`;
-        this.winAmount += this.bet;
+        this.winAmount += this.winPayout - this.bet;
         this.winAmountText.text = `win: $${this.winAmount}`;
         if (this.outOfMoney) this.outOfMoney = false;
         // post money to server

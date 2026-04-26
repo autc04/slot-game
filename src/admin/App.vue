@@ -3,14 +3,16 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 interface InstanceState {
     money: number;
+    winPayout: number;
 }
 
 type AppState = Record<string, InstanceState>;
 
 const INSTANCES = ['1', '2'] as const;
 
-const state = ref<AppState>({ '1': { money: 0 }, '2': { money: 0 } });
+const state = ref<AppState>({ '1': { money: 0, winPayout: 10 }, '2': { money: 0, winPayout: 10 } });
 const newMoney = ref<Record<string, string>>({ '1': '', '2': '' });
+const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '' });
 const connected = ref(false);
 
 let es: EventSource | null = null;
@@ -34,6 +36,16 @@ async function setMoney(instance: string) {
         body: String(amount),
     });
     newMoney.value[instance] = '';
+}
+
+async function setWinPayout(instance: string) {
+    const amount = parseInt(newWinPayout.value[instance], 10);
+    if (isNaN(amount) || amount < 0) return;
+    await fetch(`/${instance}/win-amount`, {
+        method: 'POST',
+        body: String(amount),
+    });
+    newWinPayout.value[instance] = '';
 }
 </script>
 
@@ -59,6 +71,19 @@ async function setMoney(instance: string) {
                         @keyup.enter="setMoney(inst)"
                     />
                     <button @click="setMoney(inst)">Set</button>
+                </div>
+                <div class="field">
+                    <label>Win payout: ${{ state[inst]?.winPayout ?? '—' }}</label>
+                    <div class="controls">
+                        <input
+                            v-model="newWinPayout[inst]"
+                            type="number"
+                            min="0"
+                            placeholder="New win payout"
+                            @keyup.enter="setWinPayout(inst)"
+                        />
+                        <button @click="setWinPayout(inst)">Set</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -120,6 +145,8 @@ h1 { margin: 0; font-size: 24px; }
     margin: 0 0 20px;
 }
 
+.field { margin-top: 20px; }
+.field label { display: block; font-size: 14px; color: #a0c4ff; margin-bottom: 8px; }
 .controls { display: flex; gap: 8px; }
 
 input[type="number"] {

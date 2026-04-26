@@ -14,6 +14,7 @@ function makeGameConfig(instance: '1' | '2'): string {
     instance,
     assetBase: `/${instance}/assets/`,
     moneyPath: `/${instance}/money`,
+    winAmountPath: `/${instance}/win-amount`,
   });
   return Buffer.from(config).toString('base64');
 }
@@ -44,6 +45,8 @@ module.exports = {
     proxy: {
       "/1/money": "http://localhost:8080",
       "/2/money": "http://localhost:8080",
+      "/1/win-amount": "http://localhost:8080",
+      "/2/win-amount": "http://localhost:8080",
       "/admin/events": "http://localhost:8080",
     },
   },
