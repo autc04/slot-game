@@ -14,7 +14,7 @@ function makeGameConfig(instance: '1' | '2'): string {
     instance,
     assetBase: `/${instance}/assets/`,
     moneyPath: `/${instance}/money`,
-    winAmountPath: `/${instance}/win-amount`,
+    winPayoutPath: `/${instance}/win-amount`,
   });
   return Buffer.from(config).toString('base64');
 }

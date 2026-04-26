@@ -2,7 +2,7 @@ interface GameConfig {
     instance: '1' | '2';
     assetBase: string;
     moneyPath: string;
-    winAmountPath: string;
+    winPayoutPath: string;
 }
 
 interface Window {
