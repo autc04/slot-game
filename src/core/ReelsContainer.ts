@@ -19,14 +19,14 @@ export default class ReelsContainer {
         this.container.x = REEL_OFFSET_LEFT;
     }
 
-    async spin() {
+    async spin(winBias: number = 0) {
         // Overall time of spinning = shiftingDelay * this.reels.length
         //
         const shiftingDelay = 800;
         const start = Date.now();
         const reelsToSpin = [...this.reels];
         
-        for await (let value of this.infiniteSpinning(reelsToSpin)) {
+        for await (let value of this.infiniteSpinning(reelsToSpin, winBias)) {
             const shiftingWaitTime = (this.reels.length - reelsToSpin.length + 1) * shiftingDelay;
             
             if (Date.now() >= start + shiftingWaitTime) {
@@ -41,11 +41,11 @@ export default class ReelsContainer {
         return this.checkForWin(this.reels.map(reel => reel.sprites[2]));
     }
 
-    private async* infiniteSpinning(reelsToSpin: Array<Reel>) {
+    private async* infiniteSpinning(reelsToSpin: Array<Reel>, winBias: number) {
         while (true) {
             const spinningPromises = reelsToSpin.map(reel => reel.spinOneTime());
             await Promise.all(spinningPromises);
-            this.blessRNG();
+            this.blessRNG(winBias);
             yield;
         }
     }
@@ -59,9 +59,15 @@ export default class ReelsContainer {
         return combination.size === 2 && combination.has('SYM1');
     }
 
-    private blessRNG() {
+    private blessRNG(winBias: number) {
         this.reels.forEach(reel => {
-            reel.sprites[0].texture = reel.textures[Math.floor(Math.random() * reel.textures.length)];
+            const pool = [...reel.textures];
+            if (winBias > 0) {
+                for (let i = 0; i < winBias; i++) pool.push(reel.textures[1]);
+            } else if (winBias < 0) {
+                for (let i = 0; i < -winBias; i++) pool.push(reel.textures[0]);
+            }
+            reel.sprites[0].texture = pool[Math.floor(Math.random() * pool.length)];
         });
     }
 }

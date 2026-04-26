@@ -4,15 +4,17 @@ import { ref, onMounted, onUnmounted } from 'vue';
 interface InstanceState {
     money: number;
     winPayout: number;
+    winBias: number;
 }
 
 type AppState = Record<string, InstanceState>;
 
 const INSTANCES = ['1', '2'] as const;
 
-const state = ref<AppState>({ '1': { money: 0, winPayout: 10 }, '2': { money: 0, winPayout: 10 } });
+const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0 }, '2': { money: 0, winPayout: 10, winBias: 0 } });
 const newMoney = ref<Record<string, string>>({ '1': '', '2': '' });
 const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '' });
+const newWinBias = ref<Record<string, string>>({ '1': '', '2': '' });
 const connected = ref(false);
 
 let es: EventSource | null = null;
@@ -46,6 +48,16 @@ async function setWinPayout(instance: string) {
         body: String(amount),
     });
     newWinPayout.value[instance] = '';
+}
+
+async function setWinBias(instance: string) {
+    const amount = parseInt(newWinBias.value[instance], 10);
+    if (isNaN(amount) || amount < -10 || amount > 10) return;
+    await fetch(`/${instance}/win-bias`, {
+        method: 'POST',
+        body: String(amount),
+    });
+    newWinBias.value[instance] = '';
 }
 </script>
 
@@ -83,6 +95,20 @@ async function setWinPayout(instance: string) {
                             @keyup.enter="setWinPayout(inst)"
                         />
                         <button @click="setWinPayout(inst)">Set</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Win bias: {{ state[inst]?.winBias ?? '—' }} (−10 to +10)</label>
+                    <div class="controls">
+                        <input
+                            v-model="newWinBias[inst]"
+                            type="number"
+                            min="-10"
+                            max="10"
+                            placeholder="New win bias"
+                            @keyup.enter="setWinBias(inst)"
+                        />
+                        <button @click="setWinBias(inst)">Set</button>
                     </div>
                 </div>
             </div>

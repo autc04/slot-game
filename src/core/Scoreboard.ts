@@ -13,6 +13,7 @@ export default class Scoreboard {
     private money: number = 100;
     private bet: number = 5;
     private winPayout: number = 10;
+    public winBias: number = 0;
     private fetchCounter: number = 0;
     private game : any = null;
 
@@ -21,10 +22,12 @@ export default class Scoreboard {
         Promise.all([
             fetch(window.GAME_CONFIG.moneyPath, { method: 'GET' }).then(res => res.json()),
             fetch(window.GAME_CONFIG.winPayoutPath, { method: 'GET' }).then(res => res.json()),
-        ]).then(([moneyRes, winPayoutRes]) => {
+            fetch(window.GAME_CONFIG.winBiasPath, { method: 'GET' }).then(res => res.json()),
+        ]).then(([moneyRes, winPayoutRes, winBiasRes]) => {
             if (saveCounter != this.fetchCounter) return;
             this.money = parseInt(moneyRes.toString());
             this.winPayout = parseInt(winPayoutRes.toString());
+            this.winBias = parseInt(winBiasRes.toString());
             this.moneyText.text = `${Scoreboard.MONEY_LABEL}${this.money}`;
             this.winPayoutText.text = `${Scoreboard.PAYOUT_LABEL}${this.winPayout}`;
             if (this.money - this.bet < 0) {

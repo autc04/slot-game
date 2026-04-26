@@ -3,6 +3,7 @@ interface GameConfig {
     assetBase: string;
     moneyPath: string;
     winPayoutPath: string;
+    winBiasPath: string;
 }
 
 interface Window {

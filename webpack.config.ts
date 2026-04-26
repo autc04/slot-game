@@ -15,6 +15,7 @@ function makeGameConfig(instance: '1' | '2'): string {
     assetBase: `/${instance}/assets/`,
     moneyPath: `/${instance}/money`,
     winPayoutPath: `/${instance}/win-amount`,
+    winBiasPath: `/${instance}/win-bias`,
   });
   return Buffer.from(config).toString('base64');
 }
@@ -47,6 +48,8 @@ module.exports = {
       "/2/money": "http://localhost:8080",
       "/1/win-amount": "http://localhost:8080",
       "/2/win-amount": "http://localhost:8080",
+      "/1/win-bias": "http://localhost:8080",
+      "/2/win-bias": "http://localhost:8080",
       "/admin/events": "http://localhost:8080",
     },
   },

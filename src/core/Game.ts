@@ -71,7 +71,7 @@ export default class Game {
         this.playing = true;
         this.scoreboard.decrement();
         this.playBtn.setDisabled();
-        this.reelsContainer.spin()
+        this.reelsContainer.spin(this.scoreboard.winBias)
             .then(this.processSpinResult.bind(this));
         new Audio('assets/spin2.m4a').play();
         window.document.body.requestFullscreen();
