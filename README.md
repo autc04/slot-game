@@ -18,6 +18,13 @@ A simple slot machine game with three reels.
    - To run the application for development, run ```npm run serve```
 3. Open [localhost:4200](http://localhost:4200/) in the browser
 
+#### Using devenv.sh
+1. Install [devenv.sh](https://devenv.sh/getting-started/)
+2. In the project root, run ```devenv shell```
+3. Dependencies install automatically when the shell initializes
+4. Start the dev server with ```devenv up```
+5. Open [localhost:4200](http://localhost:4200/) in the browser
+
 ---
 
 ### Features

@@ -3,4 +3,7 @@
 debug/
 build/
 node_modules/
+.devenv/
 .idea/
+dist/
+money
