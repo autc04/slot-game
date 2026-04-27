@@ -2,11 +2,12 @@ import * as PIXI from 'pixi.js';
 
 
 export default class Scoreboard {
-    private static readonly MONEY_LABEL = 'Guthaben: $';
+    private static readonly MONEY_LABEL = '$';
     private static readonly PAYOUT_LABEL = 'Gewinn: $';
     private static readonly BET_LABEL = 'Einsatz: $';
 
     public container: PIXI.Container;
+    public moneyContainer: PIXI.Container;
     public outOfMoney = false;
     private winPayoutText: PIXI.Text;
     private moneyText: PIXI.Text;
@@ -39,9 +40,10 @@ export default class Scoreboard {
         });
     }
 
-    constructor(app: PIXI.Application, game: any) {
+    constructor(app: PIXI.Application, game: any, playBtnSprite: PIXI.Sprite) {
         this.container = new PIXI.Container();
-        this.generate(app.screen.width, app.screen.height);
+        this.moneyContainer = new PIXI.Container();
+        this.generate(app.screen.width, app.screen.height, playBtnSprite);
         this.game = game;
         this.fetchmoney();
         window.setInterval(() => {
@@ -78,32 +80,40 @@ export default class Scoreboard {
         });
     }
 
-    private generate(appWidth: number, appHeight: number) {
+    private generate(appWidth: number, appHeight: number, playBtnSprite: PIXI.Sprite) {
         const style = new PIXI.TextStyle({
             fontFamily: 'Arial',
             fontSize: 24,
             fill: 'yellow',
         });
 
-        this.moneyText = new PIXI.Text(`${Scoreboard.MONEY_LABEL}${this.money}`, style);
-        this.moneyText.y = 5;
+        const moneyStyle = new PIXI.TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 36,
+            fill: 'yellow',
+        });
+
+        this.moneyText = new PIXI.Text(`${Scoreboard.MONEY_LABEL}${this.money}`, moneyStyle);
+        this.moneyContainer.x = playBtnSprite.x + (playBtnSprite.width - this.moneyText.width) / 2;
+        this.moneyContainer.y = playBtnSprite.y - this.moneyText.height - 40;
+        this.moneyContainer.addChild(this.moneyText);
 
         const betText = new PIXI.Text(`${Scoreboard.BET_LABEL}${this.bet}`, style);
-        betText.y = this.moneyText.height + 10;
+        betText.y = 5;
 
         this.winPayoutText = new PIXI.Text(`${Scoreboard.PAYOUT_LABEL}${this.winPayout}`, style);
         this.winPayoutText.y = betText.y + betText.height + 5;
 
-        betText.x = this.moneyText.x = this.winPayoutText.x = 10;
+        betText.x = this.winPayoutText.x = 10;
 
         const rect = new PIXI.Graphics();
         rect.beginFill(0x02474E, 0.8);
-        const rectHeight = this.moneyText.height + betText.height + this.winPayoutText.height + 25;
+        const rectHeight = betText.height + this.winPayoutText.height + 18;
         rect.drawRect(0, 0, 160, rectHeight);
         rect.endFill();
 
         this.container.x = appWidth - rect.width - 7;
-        this.container.y = appHeight / 2 + 70;
-        this.container.addChild(rect, this.moneyText, betText, this.winPayoutText);
+        this.container.y = appHeight / 2 + 90;
+        this.container.addChild(rect, betText, this.winPayoutText);
     }
 }
