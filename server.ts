@@ -6,13 +6,13 @@ const DIST_PATH = resolve("./dist");
 const STATE_FILE = resolve("./state.json");
 const PORT = process.env.PORT || 8080;
 
-interface InstanceState { money: number; winPayout: number; winBias: number; betPrice: number; jackpotIncrement: number; jackpot: number; }
+interface InstanceState { money: number; winPayout: number; winBias: number; betPrice: number; jackpotIncrement: number; jackpot: number; shiftingDelay: number; speed: number; }
 type AppState = Record<string, InstanceState>;
 
 const DEFAULT_STATE: AppState = {
-    "1": { money: 100, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 },
-    "2": { money: 100, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 },
-    "3": { money: 100, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 },
+    "1": { money: 100, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 },
+    "2": { money: 100, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 },
+    "3": { money: 100, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 },
 };
 
 async function readState(): Promise<AppState> {
@@ -160,6 +160,40 @@ app.post("/:instance/jackpot", async (req, res) => {
     const amount = parseInt(req.body, 10);
     if (isNaN(amount) || amount < 0) { res.status(400).end("Invalid amount"); return; }
     await updateState(s => { s[instance].jackpot = amount; });
+    res.end("ok");
+});
+
+// Shifting delay API
+app.get("/:instance/shifting-delay", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
+    const state = await readState();
+    res.json(state[instance].shiftingDelay ?? 800);
+});
+
+app.post("/:instance/shifting-delay", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
+    const amount = parseInt(req.body, 10);
+    if (isNaN(amount) || amount < 0) { res.status(400).end("Invalid amount"); return; }
+    await updateState(s => { s[instance].shiftingDelay = amount; });
+    res.end("ok");
+});
+
+// Speed API
+app.get("/:instance/speed", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
+    const state = await readState();
+    res.json(state[instance].speed ?? 50);
+});
+
+app.post("/:instance/speed", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
+    const amount = parseInt(req.body, 10);
+    if (isNaN(amount) || amount < 1) { res.status(400).end("Invalid amount"); return; }
+    await updateState(s => { s[instance].speed = amount; });
     res.end("ok");
 });
 

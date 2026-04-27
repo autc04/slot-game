@@ -19,15 +19,14 @@ export default class ReelsContainer {
         this.container.x = REEL_OFFSET_LEFT;
     }
 
-    async spin(winBias: number = 0) {
-        const shiftingDelay = 800;
+    async spin(winBias: number = 0, shiftingDelay: number = 800, speed: number = 50) {
         const remainingReels = [...this.reels];
 
         while (remainingReels.length > 0) {
             // Spin all remaining reels for shiftingDelay ms
             const start = Date.now();
             do {
-                await Promise.all(remainingReels.map(r => r.spinOneTime()));
+                await Promise.all(remainingReels.map(r => r.spinOneTime(speed)));
                 this.blessRNG();
             } while (Date.now() < start + shiftingDelay);
 
@@ -41,7 +40,7 @@ export default class ReelsContainer {
                 if (Math.random() < preventProbability) {
                     for (let extra = 0; extra < 20; extra++) {
                         if (!this.checkForWin(this.reels.map(r => r.sprites[2]))) break;
-                        await stoppedReel.spinOneTime();
+                        await stoppedReel.spinOneTime(speed);
                         this.blessRNG();
                     }
                 }
@@ -50,14 +49,14 @@ export default class ReelsContainer {
                     // Positive bias: spin last reel extra steps until a win occurs
                     for (let extra = 0; extra < winBias; extra++) {
                         if (this.checkForWin(this.reels.map(r => r.sprites[2]))) break;
-                        await stoppedReel.spinOneTime();
+                        await stoppedReel.spinOneTime(speed);
                         this.blessRNG();
                     }
                 } else {
                     // Positive bias: spin stopped reel + remaining together while win is impossible
                     for (let extra = 0; extra < winBias; extra++) {
                         if (this.isWinPossible(stoppedReel)) break;
-                        await Promise.all([stoppedReel, ...remainingReels].map(r => r.spinOneTime()));
+                        await Promise.all([stoppedReel, ...remainingReels].map(r => r.spinOneTime(speed)));
                         this.blessRNG();
                     }
                 }

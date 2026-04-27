@@ -7,6 +7,8 @@ interface GameConfig {
     betPricePath: string;
     jackpotPath: string;
     jackpotIncrementPath: string;
+    shiftingDelayPath: string;
+    speedPath: string;
 }
 
 interface Window {

@@ -42,8 +42,7 @@ export default class Reel {
         }
     }
 
-    spinOneTime() {
-        let speed = 50;
+    spinOneTime(speed: number = 50) {
         let doneRunning = false;
         let yOffset = (this.appHeight - this.sprites[0].height * 3) / 3 / 2;
 

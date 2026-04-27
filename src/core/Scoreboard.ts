@@ -16,6 +16,8 @@ export default class Scoreboard {
     private bet: number = 5;
     private winPayout: number = 10;
     public winBias: number = 0;
+    public shiftingDelay: number = 800;
+    public speed: number = 50;
     private jackpot: number = 0;
     private jackpotIncrement: number = 0;
     private fetchCounter: number = 0;
@@ -30,7 +32,9 @@ export default class Scoreboard {
             fetch(window.GAME_CONFIG.betPricePath, { method: 'GET' }).then(res => res.json()),
             fetch(window.GAME_CONFIG.jackpotPath, { method: 'GET' }).then(res => res.json()),
             fetch(window.GAME_CONFIG.jackpotIncrementPath, { method: 'GET' }).then(res => res.json()),
-        ]).then(([moneyRes, winPayoutRes, winBiasRes, betPriceRes, jackpotRes, jackpotIncrementRes]) => {
+            fetch(window.GAME_CONFIG.shiftingDelayPath, { method: 'GET' }).then(res => res.json()),
+            fetch(window.GAME_CONFIG.speedPath, { method: 'GET' }).then(res => res.json()),
+        ]).then(([moneyRes, winPayoutRes, winBiasRes, betPriceRes, jackpotRes, jackpotIncrementRes, shiftingDelayRes, speedRes]) => {
             if (saveCounter != this.fetchCounter) return;
             this.money = parseInt(moneyRes.toString());
             this.winPayout = parseInt(winPayoutRes.toString());
@@ -38,6 +42,8 @@ export default class Scoreboard {
             this.bet = parseInt(betPriceRes.toString());
             this.jackpot = parseInt(jackpotRes.toString());
             this.jackpotIncrement = parseInt(jackpotIncrementRes.toString());
+            this.shiftingDelay = parseInt(shiftingDelayRes.toString());
+            this.speed = parseInt(speedRes.toString());
             this.moneyText.text = `${Scoreboard.MONEY_LABEL}${this.money}`;
             this.winPayoutText.text = `${Scoreboard.PAYOUT_LABEL}${this.winPayout + this.jackpot}`;
             this.betText.text = `${Scoreboard.BET_LABEL}${this.bet}`;

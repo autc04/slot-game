@@ -8,18 +8,22 @@ interface InstanceState {
     betPrice: number;
     jackpotIncrement: number;
     jackpot: number;
+    shiftingDelay: number;
+    speed: number;
 }
 
 type AppState = Record<string, InstanceState>;
 
 const INSTANCES = ['1', '2', '3'] as const;
 
-const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 }, '2': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 }, '3': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 } });
+const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 }, '2': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 }, '3': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 } });
 const newMoney = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinBias = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newBetPrice = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newJackpotIncrement = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
+const newShiftingDelay = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
+const newSpeed = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const connected = ref(false);
 
 let es: EventSource | null = null;
@@ -83,6 +87,26 @@ async function setJackpotIncrement(instance: string) {
         body: String(amount),
     });
     newJackpotIncrement.value[instance] = '';
+}
+
+async function setShiftingDelay(instance: string) {
+    const amount = parseInt(newShiftingDelay.value[instance], 10);
+    if (isNaN(amount) || amount < 0) return;
+    await fetch(`/${instance}/shifting-delay`, {
+        method: 'POST',
+        body: String(amount),
+    });
+    newShiftingDelay.value[instance] = '';
+}
+
+async function setSpeed(instance: string) {
+    const amount = parseInt(newSpeed.value[instance], 10);
+    if (isNaN(amount) || amount < 1) return;
+    await fetch(`/${instance}/speed`, {
+        method: 'POST',
+        body: String(amount),
+    });
+    newSpeed.value[instance] = '';
 }
 </script>
 
@@ -164,6 +188,32 @@ async function setJackpotIncrement(instance: string) {
                 </div>
                 <div class="field">
                     <label>Jackpot: ${{ state[inst]?.jackpot ?? '—' }}</label>
+                </div>
+                <div class="field">
+                    <label>Shifting delay: {{ state[inst]?.shiftingDelay ?? '—' }} ms</label>
+                    <div class="controls">
+                        <input
+                            v-model="newShiftingDelay[inst]"
+                            type="number"
+                            min="0"
+                            placeholder="New shifting delay"
+                            @keyup.enter="setShiftingDelay(inst)"
+                        />
+                        <button @click="setShiftingDelay(inst)">Set</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Speed: {{ state[inst]?.speed ?? '—' }} px/frame</label>
+                    <div class="controls">
+                        <input
+                            v-model="newSpeed[inst]"
+                            type="number"
+                            min="1"
+                            placeholder="New speed"
+                            @keyup.enter="setSpeed(inst)"
+                        />
+                        <button @click="setSpeed(inst)">Set</button>
+                    </div>
                 </div>
             </div>
         </div>

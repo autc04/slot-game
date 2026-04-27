@@ -19,6 +19,8 @@ function makeGameConfig(instance: '1' | '2' | '3'): string {
     betPricePath: `/${instance}/bet-price`,
     jackpotPath: `/${instance}/jackpot`,
     jackpotIncrementPath: `/${instance}/jackpot-increment`,
+    shiftingDelayPath: `/${instance}/shifting-delay`,
+    speedPath: `/${instance}/speed`,
   });
   return Buffer.from(config).toString('base64');
 }
@@ -65,6 +67,12 @@ module.exports = {
       "/1/jackpot-increment": "http://localhost:8080",
       "/2/jackpot-increment": "http://localhost:8080",
       "/3/jackpot-increment": "http://localhost:8080",
+      "/1/shifting-delay": "http://localhost:8080",
+      "/2/shifting-delay": "http://localhost:8080",
+      "/3/shifting-delay": "http://localhost:8080",
+      "/1/speed": "http://localhost:8080",
+      "/2/speed": "http://localhost:8080",
+      "/3/speed": "http://localhost:8080",
       "/admin/events": "http://localhost:8080",
     },
   },
