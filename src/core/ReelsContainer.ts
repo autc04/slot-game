@@ -19,8 +19,17 @@ export default class ReelsContainer {
         this.container.x = REEL_OFFSET_LEFT;
     }
 
-    async spin(winBias: number = 0, shiftingDelay: number = 800, speed: number = 50) {
+    async spin(winBias: number = 0, shiftingDelay: number = 800, speed: number = 50, initialDelay: number = 0) {
         const remainingReels = [...this.reels];
+
+        // Spin all reels together for the initial delay before stopping them one by one
+        if (initialDelay > 0) {
+            const start = Date.now();
+            do {
+                await Promise.all(remainingReels.map(r => r.spinOneTime(speed)));
+                this.blessRNG();
+            } while (Date.now() < start + initialDelay);
+        }
 
         while (remainingReels.length > 0) {
             // Spin all remaining reels for shiftingDelay ms

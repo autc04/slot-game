@@ -9,6 +9,7 @@ interface GameConfig {
     jackpotIncrementPath: string;
     shiftingDelayPath: string;
     speedPath: string;
+    initialDelayPath: string;
 }
 
 interface Window {

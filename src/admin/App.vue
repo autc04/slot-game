@@ -10,13 +10,14 @@ interface InstanceState {
     jackpot: number;
     shiftingDelay: number;
     speed: number;
+    initialDelay: number;
 }
 
 type AppState = Record<string, InstanceState>;
 
 const INSTANCES = ['1', '2', '3'] as const;
 
-const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 }, '2': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 }, '3': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50 } });
+const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50, initialDelay: 0 }, '2': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50, initialDelay: 0 }, '3': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0, shiftingDelay: 800, speed: 50, initialDelay: 0 } });
 const newMoney = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinBias = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
@@ -24,6 +25,7 @@ const newBetPrice = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newJackpotIncrement = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newShiftingDelay = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newSpeed = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
+const newInitialDelay = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const connected = ref(false);
 
 let es: EventSource | null = null;
@@ -107,6 +109,16 @@ async function setSpeed(instance: string) {
         body: String(amount),
     });
     newSpeed.value[instance] = '';
+}
+
+async function setInitialDelay(instance: string) {
+    const amount = parseInt(newInitialDelay.value[instance], 10);
+    if (isNaN(amount) || amount < 0) return;
+    await fetch(`/${instance}/initial-delay`, {
+        method: 'POST',
+        body: String(amount),
+    });
+    newInitialDelay.value[instance] = '';
 }
 </script>
 
@@ -213,6 +225,19 @@ async function setSpeed(instance: string) {
                             @keyup.enter="setSpeed(inst)"
                         />
                         <button @click="setSpeed(inst)">Set</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Initial delay: {{ state[inst]?.initialDelay ?? '—' }} ms</label>
+                    <div class="controls">
+                        <input
+                            v-model="newInitialDelay[inst]"
+                            type="number"
+                            min="0"
+                            placeholder="New initial delay"
+                            @keyup.enter="setInitialDelay(inst)"
+                        />
+                        <button @click="setInitialDelay(inst)">Set</button>
                     </div>
                 </div>
             </div>
