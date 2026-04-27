@@ -7,7 +7,7 @@ const IS_DEV_MODE = process.argv.some(arg => arg.includes("development"));
 
 const BUILD_PATH = path.resolve("dist");
 
-function makeGameConfig(instance: '1' | '2'): string {
+function makeGameConfig(instance: '1' | '2' | '3'): string {
   // html-webpack-plugin encodes both " and ' in template output (&quot;, &#39;).
   // Base64 uses only [A-Za-z0-9+/=] — none of which get HTML-encoded.
   const config = JSON.stringify({
@@ -50,6 +50,9 @@ module.exports = {
       "/2/win-amount": "http://localhost:8080",
       "/1/win-bias": "http://localhost:8080",
       "/2/win-bias": "http://localhost:8080",
+      "/3/money": "http://localhost:8080",
+      "/3/win-amount": "http://localhost:8080",
+      "/3/win-bias": "http://localhost:8080",
       "/admin/events": "http://localhost:8080",
     },
   },
@@ -105,6 +108,12 @@ function getPlugins() {
       gameConfig: makeGameConfig('2'),
     }),
     new HTMLPlugin({
+      template: "./src/index.html",
+      filename: "3/index.html",
+      excludeChunks: ["admin"],
+      gameConfig: makeGameConfig('3'),
+    }),
+    new HTMLPlugin({
       template: "./src/admin/index.html",
       filename: "admin/index.html",
       excludeChunks: ["game"],
@@ -113,8 +122,10 @@ function getPlugins() {
       patterns: [
         { from: "./src/assets/sounds/", to: "1/assets/" },
         { from: "./src/assets/sounds/", to: "2/assets/" },
+        { from: "./src/assets/sounds/", to: "3/assets/" },
         { from: "./src/assets/1/", to: "1/assets/" },
         { from: "./src/assets/2/", to: "2/assets/" },
+        { from: "./src/assets/3/", to: "3/assets/" },
         { from: "./src/public/", to: "public/" },
         { from: "./src/styles/", to: "styles/" },
       ],

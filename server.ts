@@ -10,8 +10,9 @@ interface InstanceState { money: number; winPayout: number; winBias: number; }
 type AppState = Record<string, InstanceState>;
 
 const DEFAULT_STATE: AppState = {
-    "1": { money: 1000, winPayout: 10, winBias: 0 },
-    "2": { money: 1000, winPayout: 10, winBias: 0 },
+    "1": { money: 100, winPayout: 10, winBias: 0 },
+    "2": { money: 100, winPayout: 10, winBias: 0 },
+    "3": { money: 100, winPayout: 10, winBias: 0 },
 };
 
 async function readState(): Promise<AppState> {
@@ -48,14 +49,14 @@ app.use(express.text());
 // Money API
 app.get("/:instance/money", async (req, res) => {
     const instance = req.params.instance;
-    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
     const state = await readState();
     res.json(state[instance].money);
 });
 
 app.post("/:instance/money", async (req, res) => {
     const instance = req.params.instance;
-    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
     const amount = parseInt(req.body, 10);
     if (isNaN(amount) || amount < 0) {
         res.status(400).end("Invalid amount");
@@ -71,14 +72,14 @@ app.post("/:instance/money", async (req, res) => {
 // Win payout API
 app.get("/:instance/win-amount", async (req, res) => {
     const instance = req.params.instance;
-    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
     const state = await readState();
     res.json(state[instance].winPayout ?? 10);
 });
 
 app.post("/:instance/win-amount", async (req, res) => {
     const instance = req.params.instance;
-    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
     const amount = parseInt(req.body, 10);
     if (isNaN(amount) || amount < 0) {
         res.status(400).end("Invalid amount");
@@ -94,14 +95,14 @@ app.post("/:instance/win-amount", async (req, res) => {
 // Win bias API
 app.get("/:instance/win-bias", async (req, res) => {
     const instance = req.params.instance;
-    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
     const state = await readState();
     res.json(state[instance].winBias ?? 0);
 });
 
 app.post("/:instance/win-bias", async (req, res) => {
     const instance = req.params.instance;
-    if (instance !== '1' && instance !== '2') { res.status(404).end(); return; }
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
     const amount = parseInt(req.body, 10);
     if (isNaN(amount) || amount < -10 || amount > 10) {
         res.status(400).end("Invalid amount");
@@ -131,6 +132,7 @@ app.get("/admin/events", async (req, res) => {
 // Static files
 app.use("/1", express.static(join(DIST_PATH, "1")));
 app.use("/2", express.static(join(DIST_PATH, "2")));
+app.use("/3", express.static(join(DIST_PATH, "3")));
 app.use("/admin", express.static(join(DIST_PATH, "admin")));
 app.use(express.static(DIST_PATH));
 
@@ -138,6 +140,7 @@ app.use(express.static(DIST_PATH));
 app.get("/", (_req, res) => res.redirect("/1/"));
 app.get("/1", (_req, res) => res.redirect("/1/"));
 app.get("/2", (_req, res) => res.redirect("/2/"));
+app.get("/3", (_req, res) => res.redirect("/3/"));
 app.get("/admin", (_req, res) => res.redirect("/admin/"));
 
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));
