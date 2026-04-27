@@ -9,12 +9,12 @@ interface InstanceState {
 
 type AppState = Record<string, InstanceState>;
 
-const INSTANCES = ['1', '2'] as const;
+const INSTANCES = ['1', '2', '3'] as const;
 
-const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0 }, '2': { money: 0, winPayout: 10, winBias: 0 } });
-const newMoney = ref<Record<string, string>>({ '1': '', '2': '' });
-const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '' });
-const newWinBias = ref<Record<string, string>>({ '1': '', '2': '' });
+const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0 }, '2': { money: 0, winPayout: 10, winBias: 0 }, '3': { money: 0, winPayout: 10, winBias: 0 } });
+const newMoney = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
+const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
+const newWinBias = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const connected = ref(false);
 
 let es: EventSource | null = null;
@@ -121,7 +121,7 @@ async function setWinBias(instance: string) {
 
 .admin {
     font-family: Arial, sans-serif;
-    max-width: 600px;
+    max-width: 960px;
     margin: 40px auto;
     padding: 0 20px;
     color: #e0e0e0;
@@ -153,6 +153,10 @@ h1 { margin: 0; font-size: 24px; }
 
 .instances { display: flex; gap: 24px; flex-wrap: wrap; }
 
+@media (max-width: 540px) {
+    .instances { flex-direction: column; }
+}
+
 .card {
     flex: 1;
     min-width: 220px;
@@ -173,10 +177,11 @@ h1 { margin: 0; font-size: 24px; }
 
 .field { margin-top: 20px; }
 .field label { display: block; font-size: 14px; color: #a0c4ff; margin-bottom: 8px; }
-.controls { display: flex; gap: 8px; }
+.controls { display: flex; gap: 8px; min-width: 0; }
 
 input[type="number"] {
     flex: 1;
+    min-width: 0;
     padding: 8px 12px;
     background: #0f3460;
     border: 1px solid #1a5276;
@@ -186,7 +191,8 @@ input[type="number"] {
 }
 
 button {
-    padding: 8px 16px;
+    flex-shrink: 0;
+    padding: 8px 14px;
     background: #0f3460;
     border: 1px solid #1a5276;
     border-radius: 4px;
