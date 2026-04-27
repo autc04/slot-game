@@ -79,7 +79,17 @@ export default class Game {
         this.playBtn.setDisabled();
         this.reelsContainer.spin(this.scoreboard.winBias, this.scoreboard.shiftingDelay, this.scoreboard.speed, this.scoreboard.initialDelay)
             .then(this.processSpinResult.bind(this));
-        new Audio('assets/spin2.m4a').play();
+        const totalTime = this.scoreboard.initialDelay + this.scoreboard.shiftingDelay * this.reelsContainer.reels.length;
+        if (totalTime > 4000) {
+            new Audio('assets/spin1.m4a').play();
+        } else {
+            new Audio('assets/spin2.m4a').play();
+        }
+        if (totalTime > 2800) {
+           window.setTimeout(() => {
+                new Audio('assets/spin2.m4a').play();
+            }, totalTime - 2500);
+        }
         window.document.body.requestFullscreen();
     }
 
