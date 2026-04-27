@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 
 export default class Scoreboard {
     private static readonly MONEY_LABEL = '$';
-    private static readonly PAYOUT_LABEL = 'Gewinn: $';
+    private static readonly PAYOUT_LABEL = 'Jackpot: $';
     private static readonly BET_LABEL = 'Einsatz: $';
 
     public container: PIXI.Container;
