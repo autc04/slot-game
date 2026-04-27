@@ -5,16 +5,18 @@ interface InstanceState {
     money: number;
     winPayout: number;
     winBias: number;
+    betPrice: number;
 }
 
 type AppState = Record<string, InstanceState>;
 
 const INSTANCES = ['1', '2', '3'] as const;
 
-const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0 }, '2': { money: 0, winPayout: 10, winBias: 0 }, '3': { money: 0, winPayout: 10, winBias: 0 } });
+const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0, betPrice: 5 }, '2': { money: 0, winPayout: 10, winBias: 0, betPrice: 5 }, '3': { money: 0, winPayout: 10, winBias: 0, betPrice: 5 } });
 const newMoney = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinBias = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
+const newBetPrice = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const connected = ref(false);
 
 let es: EventSource | null = null;
@@ -58,6 +60,16 @@ async function setWinBias(instance: string) {
         body: String(amount),
     });
     newWinBias.value[instance] = '';
+}
+
+async function setBetPrice(instance: string) {
+    const amount = parseInt(newBetPrice.value[instance], 10);
+    if (isNaN(amount) || amount < 1) return;
+    await fetch(`/${instance}/bet-price`, {
+        method: 'POST',
+        body: String(amount),
+    });
+    newBetPrice.value[instance] = '';
 }
 </script>
 
@@ -109,6 +121,19 @@ async function setWinBias(instance: string) {
                             @keyup.enter="setWinBias(inst)"
                         />
                         <button @click="setWinBias(inst)">Set</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Bet price: ${{ state[inst]?.betPrice ?? '—' }}</label>
+                    <div class="controls">
+                        <input
+                            v-model="newBetPrice[inst]"
+                            type="number"
+                            min="1"
+                            placeholder="New bet price"
+                            @keyup.enter="setBetPrice(inst)"
+                        />
+                        <button @click="setBetPrice(inst)">Set</button>
                     </div>
                 </div>
             </div>

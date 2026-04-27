@@ -16,6 +16,7 @@ function makeGameConfig(instance: '1' | '2' | '3'): string {
     moneyPath: `/${instance}/money`,
     winPayoutPath: `/${instance}/win-amount`,
     winBiasPath: `/${instance}/win-bias`,
+    betPricePath: `/${instance}/bet-price`,
   });
   return Buffer.from(config).toString('base64');
 }
@@ -53,6 +54,9 @@ module.exports = {
       "/3/money": "http://localhost:8080",
       "/3/win-amount": "http://localhost:8080",
       "/3/win-bias": "http://localhost:8080",
+      "/1/bet-price": "http://localhost:8080",
+      "/2/bet-price": "http://localhost:8080",
+      "/3/bet-price": "http://localhost:8080",
       "/admin/events": "http://localhost:8080",
     },
   },

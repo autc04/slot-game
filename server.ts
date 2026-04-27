@@ -6,13 +6,13 @@ const DIST_PATH = resolve("./dist");
 const STATE_FILE = resolve("./state.json");
 const PORT = process.env.PORT || 8080;
 
-interface InstanceState { money: number; winPayout: number; winBias: number; }
+interface InstanceState { money: number; winPayout: number; winBias: number; betPrice: number; }
 type AppState = Record<string, InstanceState>;
 
 const DEFAULT_STATE: AppState = {
-    "1": { money: 100, winPayout: 10, winBias: 0 },
-    "2": { money: 100, winPayout: 10, winBias: 0 },
-    "3": { money: 100, winPayout: 10, winBias: 0 },
+    "1": { money: 100, winPayout: 10, winBias: 0, betPrice: 5 },
+    "2": { money: 100, winPayout: 10, winBias: 0, betPrice: 5 },
+    "3": { money: 100, winPayout: 10, winBias: 0, betPrice: 5 },
 };
 
 async function readState(): Promise<AppState> {
@@ -110,6 +110,29 @@ app.post("/:instance/win-bias", async (req, res) => {
     }
     const state = await readState();
     state[instance].winBias = amount;
+    await writeState(state);
+    broadcast(state);
+    res.end("ok");
+});
+
+// Bet price API
+app.get("/:instance/bet-price", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
+    const state = await readState();
+    res.json(state[instance].betPrice ?? 5);
+});
+
+app.post("/:instance/bet-price", async (req, res) => {
+    const instance = req.params.instance;
+    if (instance !== '1' && instance !== '2' && instance !== '3') { res.status(404).end(); return; }
+    const amount = parseInt(req.body, 10);
+    if (isNaN(amount) || amount < 1) {
+        res.status(400).end("Invalid amount");
+        return;
+    }
+    const state = await readState();
+    state[instance].betPrice = amount;
     await writeState(state);
     broadcast(state);
     res.end("ok");
