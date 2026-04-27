@@ -5,6 +5,8 @@ interface GameConfig {
     winPayoutPath: string;
     winBiasPath: string;
     betPricePath: string;
+    jackpotPath: string;
+    jackpotIncrementPath: string;
 }
 
 interface Window {

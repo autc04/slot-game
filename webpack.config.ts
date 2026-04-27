@@ -17,6 +17,8 @@ function makeGameConfig(instance: '1' | '2' | '3'): string {
     winPayoutPath: `/${instance}/win-amount`,
     winBiasPath: `/${instance}/win-bias`,
     betPricePath: `/${instance}/bet-price`,
+    jackpotPath: `/${instance}/jackpot`,
+    jackpotIncrementPath: `/${instance}/jackpot-increment`,
   });
   return Buffer.from(config).toString('base64');
 }
@@ -57,6 +59,12 @@ module.exports = {
       "/1/bet-price": "http://localhost:8080",
       "/2/bet-price": "http://localhost:8080",
       "/3/bet-price": "http://localhost:8080",
+      "/1/jackpot": "http://localhost:8080",
+      "/2/jackpot": "http://localhost:8080",
+      "/3/jackpot": "http://localhost:8080",
+      "/1/jackpot-increment": "http://localhost:8080",
+      "/2/jackpot-increment": "http://localhost:8080",
+      "/3/jackpot-increment": "http://localhost:8080",
       "/admin/events": "http://localhost:8080",
     },
   },

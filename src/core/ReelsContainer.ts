@@ -36,11 +36,14 @@ export default class ReelsContainer {
             const isLastReel = remainingReels.length === 0;
 
             if (isLastReel && winBias < 0) {
-                // Negative bias: spin last reel extra steps to avoid a win
-                for (let extra = 0; extra < -winBias; extra++) {
-                    if (!this.checkForWin(this.reels.map(r => r.sprites[2]))) break;
-                    await stoppedReel.spinOneTime();
-                    this.blessRNG();
+                // Negative bias: probabilistically decide whether to prevent a win
+                const preventProbability = -winBias / 10.0;
+                if (Math.random() < preventProbability) {
+                    for (let extra = 0; extra < 20; extra++) {
+                        if (!this.checkForWin(this.reels.map(r => r.sprites[2]))) break;
+                        await stoppedReel.spinOneTime();
+                        this.blessRNG();
+                    }
                 }
             } else if (winBias > 0) {
                 if (isLastReel) {

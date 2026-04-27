@@ -16,6 +16,8 @@ export default class Scoreboard {
     private bet: number = 5;
     private winPayout: number = 10;
     public winBias: number = 0;
+    private jackpot: number = 0;
+    private jackpotIncrement: number = 0;
     private fetchCounter: number = 0;
     private game : any = null;
 
@@ -26,14 +28,18 @@ export default class Scoreboard {
             fetch(window.GAME_CONFIG.winPayoutPath, { method: 'GET' }).then(res => res.json()),
             fetch(window.GAME_CONFIG.winBiasPath, { method: 'GET' }).then(res => res.json()),
             fetch(window.GAME_CONFIG.betPricePath, { method: 'GET' }).then(res => res.json()),
-        ]).then(([moneyRes, winPayoutRes, winBiasRes, betPriceRes]) => {
+            fetch(window.GAME_CONFIG.jackpotPath, { method: 'GET' }).then(res => res.json()),
+            fetch(window.GAME_CONFIG.jackpotIncrementPath, { method: 'GET' }).then(res => res.json()),
+        ]).then(([moneyRes, winPayoutRes, winBiasRes, betPriceRes, jackpotRes, jackpotIncrementRes]) => {
             if (saveCounter != this.fetchCounter) return;
             this.money = parseInt(moneyRes.toString());
             this.winPayout = parseInt(winPayoutRes.toString());
             this.winBias = parseInt(winBiasRes.toString());
             this.bet = parseInt(betPriceRes.toString());
+            this.jackpot = parseInt(jackpotRes.toString());
+            this.jackpotIncrement = parseInt(jackpotIncrementRes.toString());
             this.moneyText.text = `${Scoreboard.MONEY_LABEL}${this.money}`;
-            this.winPayoutText.text = `${Scoreboard.PAYOUT_LABEL}${this.winPayout}`;
+            this.winPayoutText.text = `${Scoreboard.PAYOUT_LABEL}${this.winPayout + this.jackpot}`;
             this.betText.text = `${Scoreboard.BET_LABEL}${this.bet}`;
             if (this.money - this.bet < 0) {
                 this.outOfMoney = true;
@@ -73,14 +79,32 @@ export default class Scoreboard {
     }
 
     increment() {
-        this.money += this.winPayout;
+        this.money += this.winPayout + this.jackpot;
         this.moneyText.text = `${Scoreboard.MONEY_LABEL}${this.money}`;
         if (this.outOfMoney) this.outOfMoney = false;
+        const wonJackpot = this.jackpot;
+        this.jackpot = 0;
+        this.winPayoutText.text = `${Scoreboard.PAYOUT_LABEL}${this.winPayout + wonJackpot}`;
         // post money to server
         ++this.fetchCounter;
         fetch(window.GAME_CONFIG.moneyPath, {
             method: 'POST',
             body: this.money.toString(),
+        });
+        // reset jackpot
+        fetch(window.GAME_CONFIG.jackpotPath, {
+            method: 'POST',
+            body: '0',
+        });
+    }
+
+    addToJackpot() {
+        this.jackpot += this.jackpotIncrement;
+        this.winPayoutText.text = `${Scoreboard.PAYOUT_LABEL}${this.winPayout + this.jackpot}`;
+        ++this.fetchCounter;
+        fetch(window.GAME_CONFIG.jackpotPath, {
+            method: 'POST',
+            body: this.jackpot.toString(),
         });
     }
 

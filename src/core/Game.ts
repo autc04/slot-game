@@ -86,11 +86,13 @@ export default class Game {
     private processSpinResult(isWin: boolean) {
         if (isWin) {
             this.scoreboard.increment();
-            this.victoryScreen.show();
+            window.setTimeout(() => this.victoryScreen.show(), 500);
             new Audio('assets/win.m4a').play();
+        } else {
+            this.scoreboard.addToJackpot();
         }
         this.playing = false;
         this.updateButton();
-        
+
     }
 }

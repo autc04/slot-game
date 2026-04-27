@@ -6,17 +6,20 @@ interface InstanceState {
     winPayout: number;
     winBias: number;
     betPrice: number;
+    jackpotIncrement: number;
+    jackpot: number;
 }
 
 type AppState = Record<string, InstanceState>;
 
 const INSTANCES = ['1', '2', '3'] as const;
 
-const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0, betPrice: 5 }, '2': { money: 0, winPayout: 10, winBias: 0, betPrice: 5 }, '3': { money: 0, winPayout: 10, winBias: 0, betPrice: 5 } });
+const state = ref<AppState>({ '1': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 }, '2': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 }, '3': { money: 0, winPayout: 10, winBias: 0, betPrice: 5, jackpotIncrement: 0, jackpot: 0 } });
 const newMoney = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinPayout = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newWinBias = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const newBetPrice = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
+const newJackpotIncrement = ref<Record<string, string>>({ '1': '', '2': '', '3': '' });
 const connected = ref(false);
 
 let es: EventSource | null = null;
@@ -70,6 +73,16 @@ async function setBetPrice(instance: string) {
         body: String(amount),
     });
     newBetPrice.value[instance] = '';
+}
+
+async function setJackpotIncrement(instance: string) {
+    const amount = parseInt(newJackpotIncrement.value[instance], 10);
+    if (isNaN(amount) || amount < 0) return;
+    await fetch(`/${instance}/jackpot-increment`, {
+        method: 'POST',
+        body: String(amount),
+    });
+    newJackpotIncrement.value[instance] = '';
 }
 </script>
 
@@ -135,6 +148,22 @@ async function setBetPrice(instance: string) {
                         />
                         <button @click="setBetPrice(inst)">Set</button>
                     </div>
+                </div>
+                <div class="field">
+                    <label>Jackpot increment: ${{ state[inst]?.jackpotIncrement ?? '—' }}</label>
+                    <div class="controls">
+                        <input
+                            v-model="newJackpotIncrement[inst]"
+                            type="number"
+                            min="0"
+                            placeholder="New jackpot increment"
+                            @keyup.enter="setJackpotIncrement(inst)"
+                        />
+                        <button @click="setJackpotIncrement(inst)">Set</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Jackpot: ${{ state[inst]?.jackpot ?? '—' }}</label>
                 </div>
             </div>
         </div>
