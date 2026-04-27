@@ -78,8 +78,9 @@ export default class Scoreboard {
         });
     }
 
-    increment() {
-        this.money += this.winPayout + this.jackpot;
+    increment(): number {
+        const winAmount = this.winPayout + this.jackpot;
+        this.money += winAmount;
         this.moneyText.text = `${Scoreboard.MONEY_LABEL}${this.money}`;
         if (this.outOfMoney) this.outOfMoney = false;
         const wonJackpot = this.jackpot;
@@ -96,6 +97,7 @@ export default class Scoreboard {
             method: 'POST',
             body: '0',
         });
+        return winAmount;
     }
 
     addToJackpot() {

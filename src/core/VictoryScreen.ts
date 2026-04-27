@@ -3,13 +3,20 @@ import * as PIXI from 'pixi.js';
 export default class VictoryScreen {
     public container: PIXI.Container;
     private overlay: PIXI.Graphics;
+    private text: PIXI.Text;
+    private rectX: number;
+    private rectWidth: number;
+    private appHeight: number;
 
     constructor(app: PIXI.Application) {
         this.container = new PIXI.Container();
         this.generate(app.screen.width, app.screen.height);
     }
 
-    show() {
+    show(amount: number) {
+        this.text.text = `+ $${amount}`;
+        this.text.x = this.rectX + (this.rectWidth - this.text.width) / 2;
+        this.text.y = (this.appHeight - this.text.height) / 2;
         this.container.visible = true;
         const id = window.setTimeout(this.hide.bind(this), 3000);
         const handler = () => {
@@ -25,6 +32,7 @@ export default class VictoryScreen {
 
     private generate(appWidth: number, appHeight: number) {
         this.container.visible = false;
+        this.appHeight = appHeight;
 
         this.overlay = new PIXI.Graphics();
         this.overlay.beginFill(0xFFFFFF, 0.001);
@@ -40,6 +48,8 @@ export default class VictoryScreen {
         rect.x = 70;
         rect.y = (appHeight - rect.height) / 2;
         rect.endFill();
+        this.rectX = rect.x;
+        this.rectWidth = rect.width;
 
         const style = new PIXI.TextStyle({
             fontFamily: 'Arial',
@@ -47,10 +57,9 @@ export default class VictoryScreen {
             fill: 'yellow',
         });
 
-        const text = new PIXI.Text('YOU WON!', style);
-        text.x = 70 + (rect.width - text.width) / 2;
-        text.y = (appHeight - text.height) / 2;
+        this.text = new PIXI.Text('', style);
+        // x/y set in show() after text content is known
 
-        this.container.addChild(rect, text, this.overlay);
+        this.container.addChild(rect, this.text, this.overlay);
     }
 }
