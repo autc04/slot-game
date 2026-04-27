@@ -6,6 +6,18 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgb(96, 142, 197);
+    /* Game 1: blue sky to green */
     background: linear-gradient(180deg, rgba(96, 142, 197, 1) 0%, rgba(95, 141, 196, 1) 22%, rgba(43, 148, 37, 1) 97%);
+}
+
+/* Game 2: black to dark gray */
+html[data-game="2"],
+html[data-game="2"] body {
+    background: linear-gradient(180deg, #000000 0%, #2a2a2a 100%);
+}
+
+/* Game 3: wild west desert — sky blue to reddish-orange */
+html[data-game="3"],
+html[data-game="3"] body {
+    background: linear-gradient(180deg, #6aaed6 0%, #d4621a 100%);
 }

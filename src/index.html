@@ -11,7 +11,7 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="/styles/main.css">
-    <script>window.GAME_CONFIG = JSON.parse(atob('<%- htmlWebpackPlugin.options.gameConfig %>'));</script>
+    <script>window.GAME_CONFIG = JSON.parse(atob('<%- htmlWebpackPlugin.options.gameConfig %>')); document.documentElement.dataset.game = window.GAME_CONFIG.instance;</script>
     <title>Slot Game</title>
 </head>
 <body>
