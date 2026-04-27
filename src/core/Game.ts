@@ -36,6 +36,11 @@ export default class Game {
     private createPlayButton() {
         this.playBtn = new PlayButton(this.app, this.handleStart.bind(this));
         this.app.stage.addChild(this.playBtn.sprite);
+        window.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (e.code === 'Space' && this.playBtn.sprite.interactive) {
+                this.handleStart();
+            }
+        });
     }
 
     private createReels() {
